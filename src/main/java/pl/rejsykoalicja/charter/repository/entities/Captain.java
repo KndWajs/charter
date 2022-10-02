@@ -1,5 +1,7 @@
 package pl.rejsykoalicja.charter.repository.entities;
 
+import lombok.Getter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -11,6 +13,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "CAPTAIN")
+@Getter
 public class Captain {
     @Id
     @Column(name = "ID", nullable = false, updatable = false, precision = 20)

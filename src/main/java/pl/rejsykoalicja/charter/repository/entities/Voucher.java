@@ -1,5 +1,7 @@
 package pl.rejsykoalicja.charter.repository.entities;
 
+import lombok.Getter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -9,6 +11,7 @@ import java.math.BigInteger;
 
 @Entity
 @Table(name = "VOUCHER")
+@Getter
 public class Voucher {
     @Id
     @Column(name = "ID", nullable = false, updatable = false, precision = 20)

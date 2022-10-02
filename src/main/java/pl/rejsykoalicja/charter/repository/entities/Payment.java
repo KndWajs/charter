@@ -1,5 +1,7 @@
 package pl.rejsykoalicja.charter.repository.entities;
 
+import lombok.Getter;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -12,6 +14,7 @@ import java.time.ZonedDateTime;
 
 @Entity
 @Table(name = "PAYMENT")
+@Getter
 public class Payment {
     @Id
     @Column(name = "ID", nullable = false, updatable = false, precision = 20)

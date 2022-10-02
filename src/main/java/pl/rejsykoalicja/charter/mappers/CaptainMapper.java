@@ -5,7 +5,12 @@ import pl.rejsykoalicja.charter.repository.entities.Captain;
 
 public class CaptainMapper {
 
-    public static CaptainDto toDto(Captain charter) {
-        return null;
+    public static CaptainDto toDto(Captain captain) {
+        return CaptainDto.builder()
+                         .firstName(captain.getFirstName())
+                         .lastName(captain.getLastName())
+                         .birthDate(captain.getBirthDate())
+                         .licenseNo(captain.getLicenseNo())
+                         .build();
     }
 }
