@@ -1,2 +1,0 @@
-# charter
-Yacht booking application
