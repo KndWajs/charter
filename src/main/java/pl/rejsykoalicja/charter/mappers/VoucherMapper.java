@@ -9,7 +9,7 @@ public class VoucherMapper {
         return VoucherDto.builder()
                          .amount(voucher.getAmount())
                          .name(voucher.getName())
-                         .tag(voucher.getTag())
+                         .code(voucher.getCode())
                          .build();
     }
 }

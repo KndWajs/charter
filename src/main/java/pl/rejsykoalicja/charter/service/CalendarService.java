@@ -7,13 +7,12 @@ import java.time.ZonedDateTime;
 import java.util.List;
 
 @Service
-public class FrontEndDataService {
-
-    public List<ZonedDateTime> getCallendar() {
+public class CalendarService {
+    public List<ZonedDateTime> getCalendar() {
         throw new NotYetImplementedException();
     }
 
-    public boolean checkAvailability(ZonedDateTime zonedDateTime) {
+    public boolean checkAvailability(ZonedDateTime from, ZonedDateTime to) {
         throw new NotYetImplementedException();
     }
 }

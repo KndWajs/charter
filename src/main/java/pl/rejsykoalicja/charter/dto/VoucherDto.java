@@ -7,6 +7,6 @@ import lombok.Data;
 @Builder
 public class VoucherDto {
     private String name;
-    private String tag;
+    private String code;
     private Integer amount;
 }

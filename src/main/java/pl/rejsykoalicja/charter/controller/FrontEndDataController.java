@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import pl.rejsykoalicja.charter.service.FrontEndDataService;
+import pl.rejsykoalicja.charter.service.CalendarService;
 
 import java.time.ZonedDateTime;
 import java.util.List;
@@ -15,16 +15,17 @@ import java.util.List;
 @AllArgsConstructor
 public class FrontEndDataController {
 
-    private final FrontEndDataService frontEndDataService;
+    private final CalendarService calendarService;
 
     @GetMapping(value = "/calendar")
     public List<ZonedDateTime> getCalendar() {
-        return frontEndDataService.getCallendar();
+        return calendarService.getCalendar();
     }
 
     @GetMapping(value = "/isAvailable")
-    public boolean checkAvailability(@RequestParam(name = "date") ZonedDateTime zonedDateTime) {
-        return frontEndDataService.checkAvailability(zonedDateTime);
+    public boolean checkAvailability
+            (@RequestParam(name = "date-from") ZonedDateTime from, @RequestParam(name = "date-to") ZonedDateTime to) {
+        return calendarService.checkAvailability(from, to);
     }
 
 }

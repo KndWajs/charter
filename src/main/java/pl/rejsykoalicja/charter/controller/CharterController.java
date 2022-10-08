@@ -39,9 +39,9 @@ public class CharterController {
         return charterService.save(dto);
     }
 
-    @PutMapping(value = "/create-sample", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PutMapping(value = "/create-charter", consumes = MediaType.APPLICATION_JSON_VALUE)
     public CharterDto create(@RequestBody CharterDto dto) {
-        return charterService.createSample(dto);
+        return charterService.createCharter(dto);
     }
 
     @PutMapping(value = "", consumes = MediaType.APPLICATION_JSON_VALUE)
