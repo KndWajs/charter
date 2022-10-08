@@ -44,8 +44,9 @@ public class DiscountsService {
     }
 
     Integer getDiscountValue(List<Discount> allDiscounts, VoucherDto voucherDto) {
-        Voucher voucher = voucherRepository.getByCode(voucherDto.getCode())
-                                           .orElse(Voucher.builder().amount(0).canExceedLimit(false).build());
+        Voucher emptyVoucher = Voucher.builder().amount(0).canExceedLimit(false).build();
+        Voucher voucher = voucherDto == null ? emptyVoucher : voucherRepository.getByCode(voucherDto.getCode())
+                                                                               .orElse(emptyVoucher);
 
         Integer discount = allDiscounts.stream().mapToInt(d -> d.discountSize).sum();
         Integer discAndVoucher = discount + voucher.getAmount();

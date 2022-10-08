@@ -7,6 +7,7 @@ import pl.rejsykoalicja.charter.Global;
 import pl.rejsykoalicja.charter.dto.CharterDto;
 import pl.rejsykoalicja.charter.dto.PaymentDto;
 import pl.rejsykoalicja.charter.dto.PayoffDto;
+import pl.rejsykoalicja.charter.dto.VoucherDto;
 import pl.rejsykoalicja.charter.enums.Discount;
 
 import java.math.BigDecimal;
@@ -22,7 +23,13 @@ public class PaymentService {
 
     public PayoffDto getPayoff(CharterDto charter) {
         List<Discount> allDiscounts = discountsService.getAllDiscounts(charter);
-        Integer totalDiscount = discountsService.getDiscountValue(allDiscounts, charter.getPayoff().getVoucher());
+
+        VoucherDto voucher = null;
+        if (charter.getPayoff() != null) {
+            voucher = charter.getPayoff().getVoucher();
+        }
+
+        Integer totalDiscount = discountsService.getDiscountValue(allDiscounts, voucher);
         BigDecimal totalCost = calculateTotalCost(totalDiscount, charter);
         return PayoffDto.builder()
                         .discounts(allDiscounts)
