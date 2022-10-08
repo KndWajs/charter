@@ -25,13 +25,16 @@ import static pl.rejsykoalicja.charter.enums.Discount.TWO_WEEKS;
 @Service
 @AllArgsConstructor
 public class DiscountsService {
+    private final static int THREE_WEEKS_DAYS = 21;
+    private final static int TWO_WEEKS_DAYS = 14;
+
     private CustomerService customerService;
     private VoucherRepository voucherRepository;
 
     List<Discount> getAllDiscounts(CharterDto dto) {
         List<Discount> discounts = new ArrayList<>();
 
-        List<Optional<Discount>> conditions = List.of(januaryCharter(), longCharter(dto), regularCustomer(dto));
+        List<Optional<Discount>> conditions = List.of(earlyBooking(), longCharter(dto), regularCustomer(dto));
 
         for (Optional<Discount> discount : conditions) {
             discount.ifPresent(discounts::add);
@@ -53,7 +56,7 @@ public class DiscountsService {
         return discAndVoucher > Global.MAX_DISCOUNT ? Global.MAX_DISCOUNT : discAndVoucher;
     }
 
-    private Optional<Discount> januaryCharter() {
+    private Optional<Discount> earlyBooking() {
         if (ZonedDateTime.now().getMonth().equals(Month.JANUARY)) {
             return Optional.of(JANUARY_BOOKING);
         } else if (ZonedDateTime.now().getMonth().equals(Month.FEBRUARY)) {
@@ -63,9 +66,9 @@ public class DiscountsService {
     }
 
     private Optional<Discount> longCharter(CharterDto dto) {
-        if (dto.getTo().getDayOfYear() - dto.getFrom().getDayOfYear() >= 21) {
+        if (dto.getTo().getDayOfYear() - dto.getFrom().getDayOfYear() >= THREE_WEEKS_DAYS) {
             return Optional.of(THREE_WEEKS);
-        } else if (dto.getTo().getDayOfYear() - dto.getFrom().getDayOfYear() >= 14) {
+        } else if (dto.getTo().getDayOfYear() - dto.getFrom().getDayOfYear() >= TWO_WEEKS_DAYS) {
             return Optional.of(TWO_WEEKS);
         }
         return Optional.empty();

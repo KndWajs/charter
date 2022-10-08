@@ -42,7 +42,9 @@ public class CharterService {
         if (dto.getFrom() == null || dto.getTo() == null) {
             throw new KnownException("Missing date");
         }
-
+        if (dto.getFrom().isAfter(dto.getTo())) {
+            throw new KnownException("Wrong dates");
+        }
         if (calendarService.checkAvailability(dto.getFrom(), dto.getTo())) {
             throw new KnownException("This date is already booked");
         }
