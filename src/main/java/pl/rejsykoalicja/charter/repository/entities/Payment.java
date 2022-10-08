@@ -29,7 +29,7 @@ public class Payment {
     @Column(name = "PAID", nullable = false)
     private Boolean paid;
 
-    @Column(name = "TAG", length = 256, nullable = false)
+    @Column(name = "TAG", length = 256, nullable = false, unique = true)
     private String tag;
 
     @ManyToOne
