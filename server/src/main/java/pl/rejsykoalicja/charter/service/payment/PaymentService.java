@@ -11,6 +11,7 @@ import pl.rejsykoalicja.charter.dto.VoucherDto;
 import pl.rejsykoalicja.charter.enums.Discount;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,27 +43,27 @@ public class PaymentService {
 
     private BigDecimal calculateTotalCost(Integer totalDiscount, CharterDto charter) {
         //TODO calculate with extra equiplment
-        int startDay = charter.getFrom().getDayOfYear();
-        int endDay = charter.getTo().getDayOfYear();
+        ZonedDateTime startDay = charter.getFrom();
+        ZonedDateTime endDay = charter.getTo();
         BigDecimal price;
-        List<Pair<Integer, BigDecimal>> days2Price = new ArrayList<>();
+        List<Pair<Long, BigDecimal>> days2Price = new ArrayList<>();
         int countDays = 0;
 
         for (Map.Entry<ZonedDateTime, BigDecimal> season : Global.SEASON_PRICES.entrySet()) {
             price = season.getValue();
             //because of leap year needed to update year in season enum
-            int seasonStartDay = season.getKey().withYear(charter.getFrom().getYear()).getDayOfYear();
+            ZonedDateTime seasonStartDay = season.getKey().withYear(charter.getFrom().getYear());
             int days = 0;
-            if (startDay < seasonStartDay) {
-                days = seasonStartDay - startDay - countDays;
+            if (startDay.isBefore(seasonStartDay)) {
+                days = (int) Duration.between(startDay, seasonStartDay).minusDays(countDays).toDays();
             }
-            if (endDay < seasonStartDay) {
-                days2Price.add(Pair.of(days - (seasonStartDay - endDay), price));
+            if (endDay.isBefore(seasonStartDay)) {
+                days2Price.add(Pair.of(days - Duration.between(endDay, seasonStartDay).toDays(), price));
                 break;
             }
             if (days > 0) {
                 countDays += days;
-                days2Price.add(Pair.of(days, price));
+                days2Price.add(Pair.of((long) days, price));
             }
         }
 
@@ -75,24 +76,25 @@ public class PaymentService {
 
         List<PaymentDto> payments = new ArrayList<>();
 
-        for (Pair<Integer, Integer> days2part : getPaymentsSizeInPercent(from)) {
+        for (Pair<Long, Integer> days2part : getDaysToPaymentsSizeInPercent(from)) {
             payments.add(PaymentDto.builder()
                                    .amount(totalCost.multiply(BigDecimal.valueOf(days2part.getSecond() / 100d)))
                                    .paid(false)
                                    .paymentDate(from.minusDays(days2part.getFirst()))
-                                   .tag(getPaymentTag(from, days2part.getFirst()))
+                                   .tag(getPaymentTag(from, days2part.getFirst().intValue()))
                                    .build());
         }
 
         return payments;
     }
 
-    private List<Pair<Integer, Integer>> getPaymentsSizeInPercent(ZonedDateTime from) {
-        int daysToCharter = from.getDayOfYear() - ZonedDateTime.now().getDayOfYear();
+    private List<Pair<Long, Integer>> getDaysToPaymentsSizeInPercent(ZonedDateTime charterStart) {
+        long daysToCharter = Duration.between(ZonedDateTime.now(), charterStart).toDays();
+
         if (daysToCharter > 30) {
-            return List.of(Pair.of(daysToCharter, 30), Pair.of(30, 20), Pair.of(15, 50));
+            return List.of(Pair.of(daysToCharter, 30), Pair.of(30L, 20), Pair.of(15L, 50));
         } else if (daysToCharter > 15) {
-            return List.of(Pair.of(daysToCharter, 50), Pair.of(15, 50));
+            return List.of(Pair.of(daysToCharter, 50), Pair.of(15L, 50));
         }
         return List.of(Pair.of(daysToCharter, 100));
     }
