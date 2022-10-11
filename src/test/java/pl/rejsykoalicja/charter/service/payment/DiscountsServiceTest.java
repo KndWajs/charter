@@ -1,5 +1,6 @@
 package pl.rejsykoalicja.charter.service.payment;
 
+import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,12 +37,19 @@ class DiscountsServiceTest {
     @Mock
     VoucherRepository voucherRepository;
 
+    static MockedStatic<Clock> mockedDateTime;
+
     @BeforeAll
     static void beforeAll() {
         // avoid adding january discount when testing in january
         Clock clock = Clock.fixed(Instant.parse("2022-05-05T12:00:00.00Z"), ZoneId.of("UTC"));
-        MockedStatic<Clock> mockedDateTime = Mockito.mockStatic(Clock.class);
+        mockedDateTime = Mockito.mockStatic(Clock.class);
         mockedDateTime.when(Clock::systemDefaultZone).thenReturn(clock);
+    }
+
+    @AfterAll
+    static void afterAll() {
+        mockedDateTime.close();
     }
 
     @Test

@@ -1,5 +1,7 @@
 INSERT INTO VOUCHER (ID, NAME, CODE, AMOUNT, EXCEED_LIMIT)
-VALUES (1, 'Super customer discount', 'SCD-001', 20, true);
+VALUES (1, 'Super customer discount', 'SCD-001', 10, false);
+INSERT INTO VOUCHER (ID, NAME, CODE, AMOUNT, EXCEED_LIMIT)
+VALUES (2, 'Super customer discount 2', 'SCD-002', 19, true);
 
 INSERT INTO PAYOFF (ID, TOTAL_COST, DISCOUNT, VOUCHER_FK)
 VALUES (1, 6002.66, 20, 1);
