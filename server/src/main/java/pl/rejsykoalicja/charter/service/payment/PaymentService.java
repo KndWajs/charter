@@ -41,6 +41,7 @@ public class PaymentService {
     }
 
     private BigDecimal calculateTotalCost(Integer totalDiscount, CharterDto charter) {
+        //TODO calculate with extra equiplment
         int startDay = charter.getFrom().getDayOfYear();
         int endDay = charter.getTo().getDayOfYear();
         BigDecimal price;
