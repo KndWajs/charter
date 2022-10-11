@@ -9,6 +9,9 @@ import pl.rejsykoalicja.charter.dto.PaymentDto;
 import pl.rejsykoalicja.charter.dto.PayoffDto;
 import pl.rejsykoalicja.charter.dto.VoucherDto;
 import pl.rejsykoalicja.charter.enums.Discount;
+import pl.rejsykoalicja.charter.mappers.VoucherMapper;
+import pl.rejsykoalicja.charter.repository.VoucherRepository;
+import pl.rejsykoalicja.charter.repository.entities.Voucher;
 
 import java.math.BigDecimal;
 import java.time.Duration;
@@ -21,28 +24,35 @@ import java.util.Map;
 @AllArgsConstructor
 public class PaymentService {
     private DiscountsService discountsService;
+    private VoucherRepository voucherRepository;
 
     public PayoffDto getPayoff(CharterDto charter) {
         List<Discount> allDiscounts = discountsService.getAllDiscounts(charter);
 
-        VoucherDto voucher = null;
-        if (charter.getPayoff() != null) {
-            voucher = charter.getPayoff().getVoucher();
-        }
+        Voucher voucher = getVoucher(charter);
 
         Integer totalDiscount = discountsService.getDiscountValue(allDiscounts, voucher);
         BigDecimal totalCost = calculateTotalCost(totalDiscount, charter);
         return PayoffDto.builder()
                         .discounts(allDiscounts)
-                        .voucher(voucher)
+                        .voucher(VoucherMapper.toDto(voucher))
                         .discountValue(totalDiscount)
                         .totalCost(totalCost)
                         .payments(createPayments(charter.getFrom(), totalCost))
                         .build();
     }
 
+    private Voucher getVoucher(CharterDto charter) {
+        Voucher emptyVoucher = Voucher.builder().amount(0).canExceedLimit(false).build();
+        if (charter.getPayoff() == null || charter.getPayoff().getVoucher() == null) {
+            return emptyVoucher;
+        } else {
+            return voucherRepository.getByCode(charter.getPayoff().getVoucher().getCode()).orElse(emptyVoucher);
+        }
+    }
+
     private BigDecimal calculateTotalCost(Integer totalDiscount, CharterDto charter) {
-        //TODO calculate with extra equiplment
+        //TODO calculate with extra equipment
         ZonedDateTime startDay = charter.getFrom();
         ZonedDateTime endDay = charter.getTo();
         BigDecimal price;

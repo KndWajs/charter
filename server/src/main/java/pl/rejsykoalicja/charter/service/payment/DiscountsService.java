@@ -29,7 +29,6 @@ public class DiscountsService {
     private final static int TWO_WEEKS_DAYS = 14;
 
     private CustomerService customerService;
-    private VoucherRepository voucherRepository;
 
     List<Discount> getAllDiscounts(CharterDto dto) {
         List<Discount> discounts = new ArrayList<>();
@@ -43,10 +42,7 @@ public class DiscountsService {
         return discounts;
     }
 
-    Integer getDiscountValue(List<Discount> allDiscounts, VoucherDto voucherDto) {
-        Voucher emptyVoucher = Voucher.builder().amount(0).canExceedLimit(false).build();
-        Voucher voucher = voucherDto == null ? emptyVoucher : voucherRepository.getByCode(voucherDto.getCode())
-                                                                               .orElse(emptyVoucher);
+    Integer getDiscountValue(List<Discount> allDiscounts, Voucher voucher) {
 
         Integer discount = allDiscounts.stream().mapToInt(d -> d.discountSize).sum();
         Integer discAndVoucher = discount + voucher.getAmount();
