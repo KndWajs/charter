@@ -33,7 +33,7 @@ public class PaymentService {
         BigDecimal totalCost = calculateTotalCost(totalDiscount, charter);
         return PayoffDto.builder()
                         .discounts(allDiscounts)
-                        .voucher(charter.getPayoff().getVoucher())
+                        .voucher(voucher)
                         .discountValue(totalDiscount)
                         .totalCost(totalCost)
                         .payments(createPayments(charter.getFrom(), totalCost))

@@ -25,7 +25,7 @@ public class FrontEndDataController {
     @GetMapping(value = "/isAvailable")
     public boolean checkAvailability
             (@RequestParam(name = "date-from") ZonedDateTime from, @RequestParam(name = "date-to") ZonedDateTime to) {
-        return calendarService.checkAvailability(from, to);
+        return calendarService.isAvailable(from, to);
     }
 
 }

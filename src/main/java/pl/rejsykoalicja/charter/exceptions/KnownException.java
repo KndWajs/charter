@@ -1,11 +1,14 @@
 package pl.rejsykoalicja.charter.exceptions;
 
+import lombok.Getter;
+
 import java.util.UUID;
 
+@Getter
 public class KnownException extends RuntimeException {
-    private String message;
-    private String description;
-    private UUID errorId;
+    private final String message;
+    private final String description;
+    private final UUID errorId;
 
     public KnownException(String message) {
         this(message, null, UUID.randomUUID());
