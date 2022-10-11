@@ -47,7 +47,7 @@ export default function CharterForm() {
             newCharter
         ).then(function (response) {
             setCharter(response.data)
-            console.log(response);
+            console.log(response.data);
         })
             .catch(function (error) {
                 // handle error

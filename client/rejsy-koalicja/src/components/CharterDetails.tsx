@@ -28,6 +28,22 @@ export default function CharterDetails({charter}: CharterDetailsProps) {
                 {Intl.NumberFormat('pl-PL', {style: 'currency', currency: 'PLN'})
                     .format(charter.payoff!.totalCost!)}
             </p>
+            <p>
+                {charter.payoff!.days2Price ? Array.from(charter.payoff!.days2Price!).map(function (day2price, i) {
+                    // @ts-ignore
+                    const days = day2price.first
+                    const price = Intl.NumberFormat('pl-PL', {
+                        style: 'currency',
+                        currency: 'PLN'
+                        // @ts-ignore
+                    }).format(day2price.second)
+                    return (
+                        <div>
+                            <p>Price per day: {price} | Days: {days}</p>
+                        </div>
+                    )
+                }) : null}
+            </p>
             <p><b>Total discount:</b> {charter.payoff?.discountValue || 0}%</p>
             <p><b>Voucher code:</b> {charter.payoff?.voucher?.code}
                 {charter.payoff?.voucher?.code ?

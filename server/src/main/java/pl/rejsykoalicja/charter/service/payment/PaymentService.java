@@ -32,11 +32,14 @@ public class PaymentService {
         Voucher voucher = getVoucher(charter);
 
         Integer totalDiscount = discountsService.getDiscountValue(allDiscounts, voucher);
-        BigDecimal totalCost = calculateTotalCost(totalDiscount, charter);
+        List<Pair<Long, BigDecimal>> days2Price = calculateDays2Price(charter);
+        BigDecimal totalCost = calculateTotalCost(days2Price, totalDiscount);
+
         return PayoffDto.builder()
                         .discounts(allDiscounts)
                         .voucher(VoucherMapper.toDto(voucher))
                         .discountValue(totalDiscount)
+                        .days2Price(days2Price)
                         .totalCost(totalCost)
                         .payments(createPayments(charter.getFrom(), totalCost))
                         .build();
@@ -51,7 +54,7 @@ public class PaymentService {
         }
     }
 
-    private BigDecimal calculateTotalCost(Integer totalDiscount, CharterDto charter) {
+    private List<Pair<Long, BigDecimal>> calculateDays2Price(CharterDto charter) {
         //TODO calculate with extra equipment
         ZonedDateTime startDay = charter.getFrom();
         ZonedDateTime endDay = charter.getTo();
@@ -76,6 +79,11 @@ public class PaymentService {
                 days2Price.add(Pair.of((long) days, price));
             }
         }
+
+        return days2Price;
+    }
+
+    private BigDecimal calculateTotalCost(List<Pair<Long, BigDecimal>> days2Price, Integer totalDiscount) {
 
         return days2Price.stream().map(pair -> pair.getSecond().multiply(new BigDecimal(pair.getFirst())))
                          .reduce(new BigDecimal(0), (subtotal, cost) -> cost.add(subtotal))
