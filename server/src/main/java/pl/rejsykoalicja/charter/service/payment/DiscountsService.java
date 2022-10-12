@@ -10,6 +10,7 @@ import pl.rejsykoalicja.charter.repository.VoucherRepository;
 import pl.rejsykoalicja.charter.repository.entities.Voucher;
 import pl.rejsykoalicja.charter.service.CustomerService;
 
+import java.time.Duration;
 import java.time.Month;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
@@ -63,9 +64,9 @@ public class DiscountsService {
     }
 
     private Optional<Discount> longCharter(CharterDto dto) {
-        if (dto.getTo().getDayOfYear() - dto.getFrom().getDayOfYear() >= THREE_WEEKS_DAYS) {
+        if (Duration.between(dto.getFrom(), dto.getTo()).toDays() >= THREE_WEEKS_DAYS) {
             return Optional.of(THREE_WEEKS);
-        } else if (dto.getTo().getDayOfYear() - dto.getFrom().getDayOfYear() >= TWO_WEEKS_DAYS) {
+        } else if (Duration.between(dto.getFrom(), dto.getTo()).toDays() >= TWO_WEEKS_DAYS) {
             return Optional.of(TWO_WEEKS);
         }
         return Optional.empty();
