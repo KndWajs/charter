@@ -7,16 +7,17 @@ import pl.rejsykoalicja.charter.Global;
 import pl.rejsykoalicja.charter.dto.CharterDto;
 import pl.rejsykoalicja.charter.dto.PaymentDto;
 import pl.rejsykoalicja.charter.dto.PayoffDto;
-import pl.rejsykoalicja.charter.dto.VoucherDto;
 import pl.rejsykoalicja.charter.enums.Discount;
 import pl.rejsykoalicja.charter.mappers.VoucherMapper;
 import pl.rejsykoalicja.charter.repository.VoucherRepository;
 import pl.rejsykoalicja.charter.repository.entities.Voucher;
+import pl.rejsykoalicja.charter.temp.PaymentTemplate;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -109,12 +110,25 @@ public class PaymentService {
     private List<Pair<Long, Integer>> getDaysToPaymentsSizeInPercent(ZonedDateTime charterStart) {
         long daysToCharter = Duration.between(ZonedDateTime.now(), charterStart).toDays();
 
-        if (daysToCharter > 30) {
-            return List.of(Pair.of(daysToCharter, 30), Pair.of(30L, 20), Pair.of(15L, 50));
-        } else if (daysToCharter > 15) {
-            return List.of(Pair.of(daysToCharter, 50), Pair.of(15L, 50));
+        PaymentTemplate paymentTemplate = getPaymentTemplate(daysToCharter);
+
+        List<Pair<Long, Integer>> payments = new ArrayList<>();
+        payments.add(Pair.of(daysToCharter, paymentTemplate.getDepositSize()));
+        paymentTemplate.getDaysToPaymentsSize().forEach(d2p -> payments.add(Pair.of(d2p.getFirst(), d2p.getSecond())));
+        return payments;
+    }
+
+    private PaymentTemplate getPaymentTemplate(long daysToCharter) {
+        List<PaymentTemplate> paymentTemplates = Global.paymentTemplates;
+        paymentTemplates.sort(Comparator.comparingLong(PaymentTemplate::getMaxDaysToCharter));
+
+        PaymentTemplate paymentTemplate = paymentTemplates.get(0);
+
+        for (int i = 0; paymentTemplates.get(i).getMaxDaysToCharter() <= daysToCharter; i++) {
+            paymentTemplate = paymentTemplates.get(i + 1);
         }
-        return List.of(Pair.of(daysToCharter, 100));
+
+        return paymentTemplate;
     }
 
     private String getPaymentTag(ZonedDateTime from, int number) {
