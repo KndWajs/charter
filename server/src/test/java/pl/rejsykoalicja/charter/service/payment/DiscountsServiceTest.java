@@ -34,8 +34,6 @@ class DiscountsServiceTest {
     DiscountsService service;
     @Mock
     CustomerService customerService;
-    @Mock
-    VoucherRepository voucherRepository;
 
     static MockedStatic<Clock> mockedDateTime;
 
@@ -154,18 +152,20 @@ class DiscountsServiceTest {
     @Test
     void shouldReturn0DiscountValue() {
         //given
+        Voucher emptyVoucher = Voucher.builder().amount(0).canExceedLimit(false).build();
         //when
-        Integer discountValue = service.getDiscountValue(List.of(), null);
+        Integer discountValue = service.getDiscountValue(List.of(), emptyVoucher);
         //then
         assertThat(discountValue).isEqualTo(0);
     }
 
     @Test
-    void shouldReturnDiscountValueForTwooWeeksBooking() {
+    void shouldReturnDiscountValueForTwoWeeksBooking() {
         //given
+        Voucher emptyVoucher = Voucher.builder().amount(0).canExceedLimit(false).build();
         Discount discount = Discount.TWO_WEEKS;
         //when
-        Integer discountValue = service.getDiscountValue(List.of(discount), null);
+        Integer discountValue = service.getDiscountValue(List.of(discount), emptyVoucher);
         //then
         assertThat(discountValue).isEqualTo(discount.discountSize);
     }
@@ -173,10 +173,11 @@ class DiscountsServiceTest {
     @Test
     void shouldSumTwoDiscounts() {
         //given
+        Voucher emptyVoucher = Voucher.builder().amount(0).canExceedLimit(false).build();
         Discount discountOne = Discount.TWO_WEEKS;
         Discount discountTwo = Discount.THREE_WEEKS;
         //when
-        Integer discountValue = service.getDiscountValue(List.of(discountOne, discountTwo), null);
+        Integer discountValue = service.getDiscountValue(List.of(discountOne, discountTwo), emptyVoucher);
         //then
         assertThat(discountValue).isEqualTo(discountOne.discountSize + discountTwo.discountSize);
     }
@@ -184,96 +185,65 @@ class DiscountsServiceTest {
     @Test
     void shouldReturnNoMoreThanMaximumDiscount() {
         //given
+        Voucher emptyVoucher = Voucher.builder().amount(0).canExceedLimit(false).build();
         List<Discount> discounts = Arrays.asList(Discount.values());
         //when
-        Integer discountValue = service.getDiscountValue(discounts, null);
+        Integer discountValue = service.getDiscountValue(discounts, emptyVoucher);
         //then
         assertThat(discountValue).isEqualTo(Global.MAX_DISCOUNT);
     }
 
     @Test
     void shouldReturnDiscountFromVoucher() {
-        //mock
-        Voucher voucherInDb = Voucher.builder().amount(10).code("sample Code").canExceedLimit(false).build();
-        when(voucherRepository.getByCode(voucherInDb.getCode())).thenReturn(Optional.of(voucherInDb));
         //given
-        VoucherDto requestVoucher = VoucherDto.builder().code("sample Code").build();
+        Voucher voucher = Voucher.builder().amount(10).code("sample Code").canExceedLimit(false).build();
         //when
-        Integer discountValue = service.getDiscountValue(List.of(), requestVoucher);
+        Integer discountValue = service.getDiscountValue(List.of(),voucher);
         //then
-        assertThat(discountValue).isEqualTo(voucherInDb.getAmount());
-    }
-
-    @Test
-    void shouldIgnoreVoucherValueFromDto() {
-        //mock
-        Voucher voucherInDb = Voucher.builder().amount(10).code("sample Code").canExceedLimit(false).build();
-        when(voucherRepository.getByCode(voucherInDb.getCode())).thenReturn(Optional.of(voucherInDb));
-        //given
-        VoucherDto requestVoucher = VoucherDto.builder().amount(60).code("sample Code").build();
-        //when
-        Integer discountValue = service.getDiscountValue(List.of(), requestVoucher);
-        //then
-        assertThat(discountValue).isNotEqualTo(requestVoucher.getAmount());
-        assertThat(discountValue).isEqualTo(voucherInDb.getAmount());
+        assertThat(discountValue).isEqualTo(voucher.getAmount());
     }
 
     @Test
     void shouldReturnSumOfDiscountAndVoucher() {
-        //mock
-        Voucher voucherInDb = Voucher.builder().amount(10).code("sample Code").canExceedLimit(false).build();
-        when(voucherRepository.getByCode(voucherInDb.getCode())).thenReturn(Optional.of(voucherInDb));
         //given
-        VoucherDto requestVoucher = VoucherDto.builder().code("sample Code").build();
+        Voucher voucher = Voucher.builder().amount(10).code("sample Code").canExceedLimit(false).build();
         Discount discount = Discount.TWO_WEEKS;
         //when
-        Integer discountValue = service.getDiscountValue(List.of(discount), requestVoucher);
+        Integer discountValue = service.getDiscountValue(List.of(discount), voucher);
         //then
-        assertThat(discountValue).isEqualTo(voucherInDb.getAmount() + discount.discountSize);
+        assertThat(discountValue).isEqualTo(voucher.getAmount() + discount.discountSize);
     }
 
     @Test
     void shouldReturnDiscountWithVoucherNotExceededMaxValue() {
-        //mock
-        Voucher voucherInDb =
-                Voucher.builder().amount(Global.MAX_DISCOUNT - 1).code("sample Code").canExceedLimit(false).build();
-        when(voucherRepository.getByCode(voucherInDb.getCode())).thenReturn(Optional.of(voucherInDb));
         //given
-        VoucherDto requestVoucher = VoucherDto.builder().code("sample Code").build();
+        Voucher voucher = Voucher.builder().amount(Global.MAX_DISCOUNT - 1).code("sample Code").canExceedLimit(false).build();
         Discount discount = Discount.TWO_WEEKS;
         //when
-        Integer discountValue = service.getDiscountValue(List.of(discount), requestVoucher);
+        Integer discountValue = service.getDiscountValue(List.of(discount), voucher);
         //then
         assertThat(discountValue).isEqualTo(Global.MAX_DISCOUNT);
     }
 
     @Test
     void shouldReturnDiscountExceededMaxValue() {
-        //mock
-        Voucher voucherInDb =
-                Voucher.builder().amount(Global.MAX_DISCOUNT - 1).code("sample Code").canExceedLimit(true).build();
-        when(voucherRepository.getByCode(voucherInDb.getCode())).thenReturn(Optional.of(voucherInDb));
         //given
-        VoucherDto requestVoucher = VoucherDto.builder().code("sample Code").build();
+        Voucher voucher = Voucher.builder().amount(Global.MAX_DISCOUNT - 1).code("sample Code").canExceedLimit(true).build();
         Discount discount = Discount.TWO_WEEKS;
         //when
-        Integer discountValue = service.getDiscountValue(List.of(discount), requestVoucher);
+        Integer discountValue = service.getDiscountValue(List.of(discount), voucher);
         //then
-        assertThat(discountValue).isEqualTo(voucherInDb.getAmount() + discount.discountSize);
+        assertThat(discountValue).isEqualTo(voucher.getAmount() + discount.discountSize);
     }
 
     @Test
     void shouldReturnDiscountExceededMaxValueOnlyByVoucherValue() {
-        //mock
-        Voucher voucherInDb =
-                Voucher.builder().amount(11).code("sample Code").canExceedLimit(true).build();
-        when(voucherRepository.getByCode(voucherInDb.getCode())).thenReturn(Optional.of(voucherInDb));
         //given
-        VoucherDto requestVoucher = VoucherDto.builder().code("sample Code").build();
+        Voucher voucher = Voucher.builder().amount(11).code("sample Code").canExceedLimit(true).build();
         //when
-        Integer discountValue = service.getDiscountValue(Arrays.asList(Discount.values()), requestVoucher);
+        Integer discountValue = service.getDiscountValue(Arrays.asList(Discount.values()), voucher);
         //then
-        assertThat(discountValue).isEqualTo(voucherInDb.getAmount() + Global.MAX_DISCOUNT);
+        assertThat(discountValue).isEqualTo(voucher.getAmount() + Global.MAX_DISCOUNT);
     }
 
     private CharterDto createCharterWithoutDiscounts() {
