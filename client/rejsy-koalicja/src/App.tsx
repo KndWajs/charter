@@ -1,7 +1,6 @@
 import React from 'react';
 import logo from './logo.svg';
-import {Counter} from './features/counter/Counter';
-import './App.css';
+import './App.scss';
 import CharterForm from "./components/CharterForm";
 
 function App() {
