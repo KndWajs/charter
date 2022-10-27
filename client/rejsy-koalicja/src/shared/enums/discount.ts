@@ -6,17 +6,17 @@ export enum Discount {
     REGULAR_CUSTOMER = "REGULAR_CUSTOMER"
 }
 
-interface DiscountType {
+export interface DiscountType {
     name: string
     discountSize: number
 }
 
-const DiscountProperties = new Map<Discount, DiscountType>([
-    [Discount.JANUARY_BOOKING, {name: "Spineker", discountSize: 20}],
-    [Discount.FEBRUARY_BOOKING, {name: "Bedding", discountSize: 10}],
-    [Discount.TWO_WEEKS, {name: "Bedding", discountSize: 5}],
-    [Discount.THREE_WEEKS, {name: "Bedding", discountSize: 10}],
-    [Discount.REGULAR_CUSTOMER, {name: "Bedding", discountSize: 5}]
+export const DiscountProperties = new Map<Discount, DiscountType>([
+    [Discount.JANUARY_BOOKING, {name: "January booking", discountSize: 20}],
+    [Discount.FEBRUARY_BOOKING, {name: "February booking", discountSize: 10}],
+    [Discount.TWO_WEEKS, {name: "Two weeks", discountSize: 5}],
+    [Discount.THREE_WEEKS, {name: "Three weeks", discountSize: 10}],
+    [Discount.REGULAR_CUSTOMER, {name: "Regular customer", discountSize: 5}]
 ])
 
 export const getDiscountName = (discount: Discount): string | undefined =>

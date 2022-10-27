@@ -39,15 +39,7 @@ export default function Price() {
                         }) : null}
                     </p>
                     <p><b>Total discount:</b> {payoff.discountValue || 0}%</p>
-                    <p><b>Voucher code:</b> {payoff.voucher?.code}
-                        {payoff.voucher?.code ?
-                            <React.Fragment> | discount: {payoff.voucher?.amount || 0}%</React.Fragment> : null}
-                    </p>
-                    <p><b>Discounts:</b>
-                        {payoff.discounts?.map(function (discount, i) {
-                            return " " + discount;
-                        })}
-                    </p>
+
                     <p><b>Payments:</b>
                         {payoff.payments?.map(function (payment, i) {
                             return (
