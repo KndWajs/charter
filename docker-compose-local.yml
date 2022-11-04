@@ -1,0 +1,29 @@
+version: '3'
+services:
+  server:
+    container_name: charter_server
+    build: ./server
+    command: java org.springframework.boot.loader.JarLauncher
+    restart: always
+    environment:
+      - spring.profiles.active=dev
+  client:
+    container_name: charter_client
+    build: ./client/rejsy-koalicja
+    depends_on:
+      - server
+    restart: always
+  proxy:
+    image: nginx:latest
+    container_name: charter_proxy
+    volumes:
+      - ./reverse_proxy/nginx.conf:/etc/nginx/nginx.conf
+      - ./ssl:/ssl/
+    environment:
+      - TZ=Europe/Warsaw
+    ports:
+      - '80:80'
+      - '443:443'
+    depends_on:
+      - client
+    restart: always
