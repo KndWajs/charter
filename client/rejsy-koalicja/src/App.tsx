@@ -4,6 +4,7 @@ import './App.scss';
 import BookCharter from "./features/charter/bookCharter/BookCharter";
 import Price from "./features/charter/price/price";
 import Discounts from "./features/charter/discounts/discounts";
+import Menu from "./features/menu/menu";
 
 function App() {
     return (
@@ -11,6 +12,7 @@ function App() {
             <div className="title">
                 <h1>This Page is only for testing back-end!</h1>
             </div>
+            <Menu/>
             <div className="content">
                 <BookCharter/>
                 <Price/>

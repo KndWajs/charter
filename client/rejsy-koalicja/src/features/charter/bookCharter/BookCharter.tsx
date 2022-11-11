@@ -9,10 +9,12 @@ import {setCharter, setFrom, setTo, setVoucherCode} from "../charterSlice";
 import {useCreateCharterMutation} from "../../../services/charter";
 import {addDays, formatDate} from "../../../utils/general";
 import CharterDto from "../../../shared/models/charterDto";
+import {useTranslation} from "react-i18next";
 
 
 export default function BookCharter() {
 
+    const {t} = useTranslation();
     const from = useSelector((state: RootState) => state.charter.charter.from)
     const to = useSelector((state: RootState) => state.charter.charter.to)
     const voucherCode = useSelector((state: RootState) => state.charter.charter.payoff?.voucher?.code)
@@ -37,15 +39,14 @@ export default function BookCharter() {
 
     return (
         <Card id="main-card" interactive={false} elevation={Elevation.TWO}>
-            <h3 className="bp4-heading">Book a charter</h3>
-
+            <h3 className="bp4-heading">{t("createCharter")}</h3>
             <div className="double-input margin">
                 <div className="titles">
                     <div className="left-title">
-                        Starting date
+                        {t("startingDate")}
                     </div>
                     <div className="right-title">
-                        Ending date
+                        {t("endingDate")}
                     </div>
                 </div>
                 <div className="content">
@@ -84,7 +85,7 @@ export default function BookCharter() {
             <div className="double-input margin">
                 <div className="titles">
                     <div className="left-title">
-                        Voucher code
+                        {t("voucherCode")}
                     </div>
                 </div>
                 <div className="content">
@@ -93,7 +94,7 @@ export default function BookCharter() {
                             id="code"
                             value={voucherCode || ""}
                             className={Classes.INPUT}
-                            placeholder="eg. SCD-001 or SCD-002"
+                            placeholder={t("voucherCode")}
                             onChange={handleVoucherData}
                         />
                     </div>
@@ -107,7 +108,7 @@ export default function BookCharter() {
                 </div>
             </div>
 
-            <Button onClick={() => updatePost(charter)}>Submit</Button>
+            <Button onClick={() => updatePost(charter)}>{t("create")}</Button>
         </Card>
     )
 }
